@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,26 +34,29 @@
           <div class="row">
             <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
               <div class="card card-plain mt-8">
+              <c:if test="${msg != null }"><div class="alert alert-success text-white" role="alert">${msg}</div></c:if>
+              <c:if test="${error != null }"><div class="alert alert-danger text-white" role="alert">${error}</div></c:if>
                 <div class="card-header pb-0 text-left bg-transparent">
                   <h3 class="font-weight-bolder text-info text-gradient">FoodShop</h3>
                   <p class="mb-0">Connectez vous </p>
                 </div>
                 <div class="card-body">
-                  <form role="form">
+                  <form role="form" action="${contextPath}/loginProcess" method="post">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                     <label>Email</label>
                     <div class="mb-3">
-                      <input type="email" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon">
+                      <input type="email" name="username" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon">
                     </div>
                     <label>Password</label>
                     <div class="mb-3">
-                      <input type="email" class="form-control" placeholder="Mot de Passe " aria-label="Password" aria-describedby="password-addon">
+                      <input type="password" name="password" class="form-control" placeholder="Mot de Passe " aria-label="Password" aria-describedby="password-addon">
                     </div>
                     <div class="form-check form-switch">
                       <input class="form-check-input" type="checkbox" id="rememberMe" checked="">
                       <label class="form-check-label" for="rememberMe">Se Rappeler de moi </label>
                     </div>
                     <div class="text-center">
-                      <button type="button" class="btn bg-gradient-info w-100 mt-4 mb-0">Connexion</button>
+                      <button type="submit" class="btn bg-gradient-info w-100 mt-4 mb-0">Connexion</button>
                     </div>
                   </form>
                 </div>

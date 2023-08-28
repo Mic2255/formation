@@ -15,13 +15,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+//@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
     @Autowired
     private UserService userService;
 
@@ -31,10 +34,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtFilter jwtFilter;
 
+    //BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService);
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
     }
 
     @Override
@@ -43,17 +52,41 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+//    @Bean
+//    public SecurityFilterChain filterSecurity(HttpSecurity http) throws Exception {
+//        http.csrf().disable()
+//                .authorizeHttpRequests((authorize) ->
+//                        authorize.antMatchers("/login","/dashboard", "/resources/assets/**").permitAll().anyRequest().authenticated()
+//                ).formLogin(
+//                form -> form
+//                        .loginPage("/login")
+//                        .failureUrl("/login?error=true")
+//                        .loginProcessingUrl("/loginProcess").permitAll()
+//                        .defaultSuccessUrl("/")
+//                        .defaultSuccessUrl("/")
+//                        .permitAll()
+//        ).logout(
+//                logout -> logout.invalidateHttpSession(true)
+//                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//                        .logoutSuccessUrl("/process-logout").permitAll()
+//        ).exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/", "/dashboard", "/home", "/login")
+                .antMatchers("/**", "/resources/assets/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().formLogin().loginPage("/login").failureUrl("/login?error=true")
-                .loginProcessingUrl("/").permitAll()
+                .loginProcessingUrl("/loginProcess").permitAll().defaultSuccessUrl("/")
                 .and().logout().invalidateHttpSession(true)
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/process-logout").permitAll()

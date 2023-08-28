@@ -7,7 +7,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
     @RequestMapping({"/","/dashboard","/home"})
     public String index (){
-        return "index";
+        return "dashboard";
     }
+
+
+    @RequestMapping({"/categories"})
+    public String categories (){
+        return "categories";
+    }
+
+    @RequestMapping({"/article"})
+    public String article (){
+        return "article";
+    }
+
 
 }

@@ -55,6 +55,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.info(String.format("Connexion de %s", username));
+        Optional<User> rs = repository.findByLogin(username);
+        logger.info(rs.isPresent() ? "Trouvé" + rs.get().getPassword() : "Non trouvé!");
         return repository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("Utilisateur %s non trouvé !", username)));
     }
